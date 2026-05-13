@@ -167,7 +167,7 @@ The following table summarizes the test performance of the six models. The value
 
 ![Project Thumbnail](figures/accuracy_comparison.png)
 
-![Project Thumbnail](figures/f1_micro_comparison_comparison.png)
+![Project Thumbnail](figures/f1_macro_comparison_comparison.png)
 
 ### Key Observations
 
