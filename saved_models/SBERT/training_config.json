@@ -1,0 +1,23 @@
+{
+  "pipeline_name": "All Models",
+  "model_name": "SBERT",
+  "backbone": "sentence-transformers/all-mpnet-base-v2",
+  "max_abs_words": 300,
+  "max_concl_words": 300,
+  "max_token_len": 256,
+  "train_frac": 0.6999704404374816,
+  "val_frac": 0.10000985318750616,
+  "test_frac": 0.20001970637501232,
+  "seed": 42,
+  "batch_size": 256,
+  "encode_batch_size": 256,
+  "lr": 0.0002,
+  "weight_decay": 0.01,
+  "epochs": 16,
+  "patience": 4,
+  "dropout": 0.25,
+  "label_smoothing": 0.01,
+  "grad_accum": 1,
+  "max_grad_norm": 1.0,
+  "num_workers": 2
+}

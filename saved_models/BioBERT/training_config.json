@@ -1,0 +1,21 @@
+{
+  "pipeline_name": "biobert_pair_classifier",
+  "model_name": "BioBERT",
+  "backbone": "dmis-lab/biobert-base-cased-v1.2",
+  "max_abs_words": 300,
+  "max_concl_words": 300,
+  "max_len": 256,
+  "seed": 42,
+  "batch_size": 16,
+  "grad_accum": 2,
+  "lr": 2e-05,
+  "weight_decay": 0.01,
+  "epochs": 12,
+  "patience": 3,
+  "freeze_layers": 0,
+  "max_grad_norm": 1.0,
+  "label_smoothing": 0.01,
+  "warmup_ratio": 0.1,
+  "gradient_checkpointing": false,
+  "num_workers": 2
+}

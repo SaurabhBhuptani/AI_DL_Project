@@ -1,0 +1,21 @@
+{
+  "pipeline_name": "longformer_pair_classifier_fast",
+  "model_name": "Longformer",
+  "backbone": "allenai/longformer-base-4096",
+  "max_abs_words": 220,
+  "max_concl_words": 220,
+  "max_len": 384,
+  "seed": 42,
+  "batch_size": 4,
+  "grad_accum": 4,
+  "lr": 1.5e-05,
+  "weight_decay": 0.01,
+  "epochs": 6,
+  "patience": 2,
+  "freeze_layers": 10,
+  "max_grad_norm": 1.0,
+  "label_smoothing": 0.02,
+  "warmup_ratio": 0.08,
+  "gradient_checkpointing": false,
+  "num_workers": 2
+}

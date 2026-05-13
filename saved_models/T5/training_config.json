@@ -1,0 +1,22 @@
+{
+  "pipeline_name": "t5_pair_classifier",
+  "model_name": "T5",
+  "backbone": "t5-base",
+  "max_abs_words": 300,
+  "max_concl_words": 300,
+  "max_in_len": 512,
+  "seed": 42,
+  "batch_size": 2,
+  "grad_accum": 8,
+  "lr": 2e-05,
+  "weight_decay": 0.01,
+  "epochs": 12,
+  "patience": 4,
+  "max_grad_norm": 1.0,
+  "label_smoothing": 0.0,
+  "warmup_ratio": 0.1,
+  "dropout": 0.1,
+  "num_workers": 2,
+  "yes_token_id": 4273,
+  "no_token_id": 150
+}
