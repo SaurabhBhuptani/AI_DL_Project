@@ -165,6 +165,10 @@ The following table summarizes the test performance of the six models. The value
 | T5          |   0.9591 |            0.9581 |         0.9516 |     0.9547 |      0.9590 |  0.9932 | 0.9860 |   0.1943 |
 | BART        |   0.9970 |            0.9971 |         0.9964 |     0.9967 |      0.9970 |  0.9993 | 0.9988 |   0.0194 |
 
+![Project Thumbnail](figures/accuracy_comparison.png)
+
+![Project Thumbnail](figures/f1_micro_comparison_comparison.png)
+
 ### Key Observations
 
 The benchmark shows a clear but narrow separation among the top models. **BART** achieves the best overall classification performance, with the highest accuracy and macro-F1. **BigBird** follows very closely and obtains the strongest ROC-AUC and PR-AUC, which indicates excellent ranking quality. **BioBERT** also performs extremely well, showing that domain-specific biomedical pretraining is very effective for this task.
@@ -241,8 +245,8 @@ The project reports:
 ### Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd ACRD-Project
+git clone https://github.com/SaurabhBhuptani/AI_DL_Project.git
+cd AI_DL_Project
 ```
 
 ### Install dependencies
