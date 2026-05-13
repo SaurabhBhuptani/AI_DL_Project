@@ -142,8 +142,6 @@ T5 is a text-to-text model adapted here for prompt-based classification. Instead
 
 BART is an encoder-decoder model trained using a denoising objective. For this project, it is used in sequence-classification mode, which lets the encoder process the abstract and conclusion jointly and pass the pooled representation to a classification head. BART is one of the strongest models in the benchmark and achieves the best overall classification performance. This suggests that its combination of a robust pretrained encoder and a strong classification head is particularly effective for biomedical pair classification.
 
----
-
 ### Test Results Summary
 
 The following table summarizes the test performance of the six models. The values show that all models perform well, but there are clear differences in accuracy, calibration, and training efficiency.
@@ -190,19 +188,6 @@ Each model uses a validation-optimized threshold instead of a fixed cutoff of 0.
 | BART        |          0.870 |
 
 The threshold values show that the models behave very differently in probability space. Some models are conservative and require a high cutoff for positive predictions, while others produce high positive probabilities more readily. Validation-based threshold tuning therefore plays a central role in obtaining the best final test performance.
-
-### Hard-Negative Performance
-
-| Model       | Hard-Negative Count | Hard-Negative Accuracy |
-| ----------- | ------------------: | ---------------------: |
-| SBERT + MLP |                 365 |                 0.9945 |
-| BioBERT     |                 365 |                 0.9945 |
-| Longformer  |                 527 |                 0.9848 |
-| BigBird     |                 365 |                 0.9973 |
-| T5          |                 365 |                 0.9890 |
-| BART        |                 365 |                 1.0000 |
-
-Hard-negative accuracy measures how well the model handles difficult negative examples, where the abstract and conclusion may look superficially similar but actually belong to different subdomains. The results show that the strongest models remain robust even on these challenging cases. **BART** is perfect on the reported hard-negative subset, while **BigBird**, **SBERT**, and **BioBERT** are also extremely strong.
 
 ### Interpretation
 
@@ -254,8 +239,6 @@ cd ACRD-Project
 
 Install the packages in the notebook cells.
 
----
-
 ## Run BART inference cell
 
 The BART inference script supports multiline abstract and conclusion input and returns:
@@ -275,16 +258,6 @@ The BART inference script supports multiline abstract and conclusion input and r
     "threshold": 0.87
 }
 ```
-
-## Reproducibility
-
-To reproduce the experiments:
-
-* keep the random seed fixed at `42`
-* use the same dataset split files
-* keep the same preprocessing steps
-* use the same threshold tuning procedure
-* load the same saved checkpoints
 
 ## Acknowledgements
 
