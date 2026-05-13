@@ -29,11 +29,6 @@ The benchmarked models include:
 
 ```text
 ACRD-Project/
-├── data/
-│   ├── pmc_abstract_conclusion_data.pkl
-│   ├── all_unique_mesh_tags.csv
-│   ├── pmc_pair_dataset_balanced.csv
-│   └── subdomain_pair_summary.csv
 ├── notebooks/
 │   ├── 01_extract_pmc.ipynb
 │   ├── 02_build_dataset.ipynb
@@ -46,22 +41,6 @@ ACRD-Project/
 │   ├── BigBird/
 │   ├── T5/
 │   └── BART/
-├── results/
-│   ├── confusion_matrices/
-│   ├── roc_curves/
-│   ├── pr_curves/
-│   ├── subdomain_plots/
-│   └── length_bucket_plots/
-├── figures/
-│   ├── pipeline_overview.png
-│   ├── dataset_construction.png
-│   ├── model_comparison.png
-│   ├── confusion_matrix_grid.png
-│   ├── roc_curves_grid.png
-│   ├── pr_curves_grid.png
-│   ├── subdomain_performance_grid.png
-│   └── length_bucket_grid.png
-├── requirements.txt
 └── README.md
 ```
 
