@@ -23,17 +23,13 @@ The benchmarked models include:
 * T5
 * BART
 
----
-
 ## Project Structure
 
 ```text
 ACRD-Project/
 ├── notebooks/
-│   ├── 01_extract_pmc.ipynb
-│   ├── 02_build_dataset.ipynb
-│   ├── 03_train_models.ipynb
-│   └── 04_inference_demo.ipynb
+│   ├── Dataset_Generation.ipynb
+│   ├── All_Models.ipynb
 ├── saved_models/
 │   ├── SBERT/
 │   ├── BioBERT/
@@ -43,8 +39,6 @@ ACRD-Project/
 │   └── BART/
 └── README.md
 ```
-
----
 
 ## What the Project Does
 
@@ -60,110 +54,6 @@ The task is built from the abstract and conclusion sections of full-text biomedi
 * topic-based grouping
 * scientific document organization
 * downstream retrieval pipelines
-
----
-
-## Figure Placement Guide for GitHub README
-
-Below are the recommended image placeholders and where to place them.
-
-### 1. Pipeline Overview
-
-**File:** `figures/pipeline_overview.png`
-
-**Place near:** the top of the README, immediately after the overview.
-
-**Suggested content:** a flowchart showing:
-PMC OAI-PMH → XML parsing → abstract/conclusion extraction → MeSH collection → dataset building → model training → evaluation → packaging.
-
----
-
-### 2. Dataset Construction Diagram
-
-**File:** `figures/dataset_construction.png`
-
-**Place near:** the dataset or preprocessing section.
-
-**Suggested content:** a diagram showing how one paper becomes a positive pair and how negative pairs are formed from different papers/domains.
-
----
-
-### 3. Model Comparison Chart
-
-**File:** `figures/model_comparison.png`
-
-**Place near:** the model comparison or results section.
-
-**Suggested content:** a bar chart comparing Accuracy, Macro-F1, ROC-AUC, and PR-AUC across all six models.
-
----
-
-### 4. Confusion Matrix Grid
-
-**File:** `figures/confusion_matrix_grid.png`
-
-**Place near:** the results section.
-
-**Suggested content:** one confusion matrix per model in a 2×3 grid.
-
----
-
-### 5. ROC Curves Grid
-
-**File:** `figures/roc_curves_grid.png`
-
-**Place near:** the results section, after the confusion matrices.
-
-**Suggested content:** overlayed or grid ROC curves for all models.
-
----
-
-### 6. PR Curves Grid
-
-**File:** `figures/pr_curves_grid.png`
-
-**Place near:** the results section, after the ROC curves.
-
-**Suggested content:** overlayed or grid precision–recall curves for all models.
-
----
-
-### 7. Subdomain Performance Grid
-
-**File:** `figures/subdomain_performance_grid.png`
-
-**Place near:** the discussion section.
-
-**Suggested content:** per-subdomain accuracy plots for each model.
-
----
-
-### 8. Length Bucket Grid
-
-**File:** `figures/length_bucket_grid.png`
-
-**Place near:** the discussion section.
-
-**Suggested content:** accuracy across short, medium, long, and very long input-length buckets.
-
----
-
-## Recommended README Visual Order
-
-A good visual order in GitHub is:
-
-1. Pipeline overview
-2. Dataset construction
-3. Model comparison
-4. Confusion matrices
-5. ROC curves
-6. PR curves
-7. Subdomain performance
-8. Length-bucket performance
-
-This order helps the reader move from **how the system works** to **how well it performs**.
-
----
 
 ## Data Collection
 
@@ -189,8 +79,6 @@ The parser is designed to handle variation in XML structure. For example, conclu
 
 Only records with both a usable abstract and a usable conclusion are kept.
 
----
-
 ## MeSH and Subdomain Grouping
 
 **MeSH** stands for **Medical Subject Headings**. It is a controlled biomedical vocabulary maintained by the National Library of Medicine. MeSH helps standardize topics across papers so that related terms map to broader subject groups.
@@ -210,8 +98,6 @@ In this project, MeSH-like tags are used to group papers into biomedical subdoma
 
 These groups support subdomain-aware dataset construction and later analysis.
 
----
-
 ## Dataset Construction
 
 The final dataset is **pair-level**.
@@ -228,31 +114,115 @@ A negative sample is created by pairing an abstract from one paper with a conclu
 
 This creates a supervised binary task where the model learns whether two biomedical sections are semantically aligned within the same subdomain.
 
+## Models and Results
+
+This project benchmarks six deep learning models for biomedical abstract–conclusion relevance detection. Every model is trained on the same pair-level dataset, uses the same label definition, and is evaluated using the same validation-driven threshold selection procedure. The goal is not only to compare final accuracy, but also to compare how different architectural families behave on biomedical text pairs under identical preprocessing and evaluation settings.
+
+### 1. SBERT + MLP
+
+SBERT is the fastest model in the benchmark and serves as a strong embedding-based baseline. It encodes the abstract and conclusion independently into dense sentence representations. Those representations are then combined with pairwise interaction features and passed through a lightweight multilayer perceptron. Because the encoder is frozen and only the classifier head is trained, SBERT is highly efficient and inexpensive to run. In this project, SBERT is especially useful as a practical reference model: it shows how far a sentence-embedding approach can go before moving to heavier transformer cross-encoders.
+
+### 2. BioBERT
+
+BioBERT is a biomedical transformer pretrained on PubMed and PMC-style text. It is used here as a cross-encoder, meaning the abstract and conclusion are concatenated and processed jointly. This is a stronger formulation than independent encoding because the model can attend across the two sections token by token. BioBERT is expected to perform well on this task because the dataset is biomedical, the labels are subdomain-based, and the language is technical and domain-specific. Its strong results confirm that biomedical pretraining is highly valuable for this classification problem.
+
+### 3. Longformer
+
+Longformer is designed for long documents and replaces standard dense self-attention with a sparse attention pattern. This makes it suitable for longer biomedical inputs, where important information may be distributed across many tokens. In the benchmark, Longformer is used as a pair classifier on abstract and conclusion text. It is particularly relevant when the input text is longer than what standard BERT-style models can handle comfortably. Although Longformer remains strong, its training cost is higher than simpler models, and in this setup it is outperformed by the top models in overall classification quality.
+
+### 4. BigBird
+
+BigBird is another long-context transformer, but it uses a block-sparse attention design that mixes local, global, and random attention. This allows it to process long sequences efficiently while still capturing long-range dependencies. For this project, BigBird is important because biomedical abstracts and conclusions may contain distant clues that matter for subdomain classification. BigBird performs extremely well in the benchmark and achieves the strongest ranking-style metrics, which suggests that its sparse attention mechanism captures the pair-level semantic relationship very effectively.
+
+### 5. T5
+
+T5 is a text-to-text model adapted here for prompt-based classification. Instead of using a traditional classification head, the model receives a natural-language prompt and predicts a label through token likelihood scoring. This makes T5 flexible, but also more sensitive to prompt design and calibration. In this project, T5 is useful as a contrasting architecture because it tests whether the task can be solved well using a text-to-text framing rather than a direct classification head. The results show that T5 is still capable of learning the task, but it is less competitive than the strongest encoder and encoder-decoder classifiers under the current setup.
+
+### 6. BART
+
+BART is an encoder-decoder model trained using a denoising objective. For this project, it is used in sequence-classification mode, which lets the encoder process the abstract and conclusion jointly and pass the pooled representation to a classification head. BART is one of the strongest models in the benchmark and achieves the best overall classification performance. This suggests that its combination of a robust pretrained encoder and a strong classification head is particularly effective for biomedical pair classification.
+
 ---
 
-## Training Setup
+### Test Results Summary
 
-The benchmark compares six models:
+The following table summarizes the test performance of the six models. The values show that all models perform well, but there are clear differences in accuracy, calibration, and training efficiency.
 
-* **SBERT + MLP** — fast sentence-embedding baseline
-* **BioBERT** — biomedical cross-encoder
-* **Longformer** — long-context transformer
-* **BigBird** — sparse long-context transformer
-* **T5** — prompt-based text-to-text classifier
-* **BART** — encoder-decoder classifier
+| Model       | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | Weighted F1 | ROC-AUC | PR-AUC | Log-Loss |
+| ----------- | -------: | ----------------: | -------------: | ---------: | ----------: | ------: | -----: | -------: |
+| SBERT + MLP |   0.9941 |            0.9935 |         0.9935 |     0.9935 |      0.9941 |  0.9998 | 0.9996 |   0.0237 |
+| BioBERT     |   0.9946 |            0.9927 |         0.9955 |     0.9941 |      0.9946 |  0.9999 | 0.9997 |   0.0212 |
+| Longformer  |   0.9833 |            0.9819 |         0.9813 |     0.9816 |      0.9832 |  0.9981 | 0.9971 |   0.0608 |
+| BigBird     |   0.9956 |            0.9959 |         0.9943 |     0.9951 |      0.9956 |  0.9999 | 0.9998 |   0.0234 |
+| T5          |   0.9591 |            0.9581 |         0.9516 |     0.9547 |      0.9590 |  0.9932 | 0.9860 |   0.1943 |
+| BART        |   0.9970 |            0.9971 |         0.9964 |     0.9967 |      0.9970 |  0.9993 | 0.9988 |   0.0194 |
 
-All models are trained with a common evaluation protocol and threshold tuning.
+### Key Observations
 
-### Common techniques
+The benchmark shows a clear but narrow separation among the top models. **BART** achieves the best overall classification performance, with the highest accuracy and macro-F1. **BigBird** follows very closely and obtains the strongest ROC-AUC and PR-AUC, which indicates excellent ranking quality. **BioBERT** also performs extremely well, showing that domain-specific biomedical pretraining is very effective for this task.
 
-* class weighting
-* label smoothing
-* mixed precision
-* gradient accumulation
-* early stopping
-* validation-based threshold optimization
+**SBERT** is the most efficient model in the benchmark and remains highly competitive despite being much simpler than the transformer-based cross-encoders. This makes it the best model when training time or deployment cost is a concern. **Longformer** still performs strongly, but its scores are lower than those of the top three models. **T5** is the weakest model in the comparison, likely because prompt-based label-token scoring is more sensitive to phrasing, calibration, and optimization choices.
 
----
+### Training Time
+
+| Model       | Training Time (s) |
+| ----------- | ----------------: |
+| SBERT + MLP |              29.4 |
+| BioBERT     |             441.7 |
+| Longformer  |            3026.6 |
+| BigBird     |            3311.8 |
+| T5          |            5111.0 |
+| BART        |            2360.6 |
+
+The training-time table shows an important practical trade-off. SBERT is by far the fastest model, while T5 is the slowest. Longformer and BigBird are computationally expensive because of long-context processing, and BART offers a strong balance between high accuracy and moderate training time.
+
+### Best Validation Thresholds
+
+Each model uses a validation-optimized threshold instead of a fixed cutoff of 0.5. This is important because the raw probability distributions differ across architectures and are not equally calibrated.
+
+| Model       | Best Threshold |
+| ----------- | -------------: |
+| SBERT + MLP |          0.765 |
+| BioBERT     |          0.105 |
+| Longformer  |          0.195 |
+| BigBird     |          0.050 |
+| T5          |          0.880 |
+| BART        |          0.870 |
+
+The threshold values show that the models behave very differently in probability space. Some models are conservative and require a high cutoff for positive predictions, while others produce high positive probabilities more readily. Validation-based threshold tuning therefore plays a central role in obtaining the best final test performance.
+
+### Hard-Negative Performance
+
+| Model       | Hard-Negative Count | Hard-Negative Accuracy |
+| ----------- | ------------------: | ---------------------: |
+| SBERT + MLP |                 365 |                 0.9945 |
+| BioBERT     |                 365 |                 0.9945 |
+| Longformer  |                 527 |                 0.9848 |
+| BigBird     |                 365 |                 0.9973 |
+| T5          |                 365 |                 0.9890 |
+| BART        |                 365 |                 1.0000 |
+
+Hard-negative accuracy measures how well the model handles difficult negative examples, where the abstract and conclusion may look superficially similar but actually belong to different subdomains. The results show that the strongest models remain robust even on these challenging cases. **BART** is perfect on the reported hard-negative subset, while **BigBird**, **SBERT**, and **BioBERT** are also extremely strong.
+
+### Interpretation
+
+Overall, the benchmark indicates that abstract–conclusion relevance detection is highly learnable when the dataset is carefully constructed and the models are trained with class weighting, validation threshold tuning, and consistent preprocessing. The best model depends on the intended use case. If the priority is maximum predictive performance, **BART** is the strongest option. If the priority is ranking quality on difficult examples, **BigBird** is especially strong. If the priority is biomedical specialization, **BioBERT** is a very solid choice. If the priority is speed and simplicity, **SBERT** offers the best speed–performance trade-off.
+
+### Saved Outputs
+
+Each trained model saves the following artifacts in its own directory:
+
+* `best_model.pt`
+* `metrics.json`
+* `threshold.json`
+* `label_map.json`
+* `training_config.json`
+* `inference.py`
+* `model/`
+* `tokenizer/`
+* `results/`
+
+These files can be used later for inference, packaging, comparison, or deployment without retraining.
 
 ## Evaluation Metrics
 
@@ -271,110 +241,22 @@ The project reports:
 * Length-bucket Performance
 * Hard-negative Accuracy
 
----
-
 ## How to Use the Project
 
-### 1. Clone the repository
+### Clone the repository
 
 ```bash
 git clone <your-repo-url>
 cd ACRD-Project
 ```
 
-### 2. Install dependencies
+### Install dependencies
 
-```bash
-pip install -r requirements.txt
-```
-
-If you are using Colab, install the packages in the notebook cells instead.
+Install the packages in the notebook cells.
 
 ---
 
-### 3. Prepare the data
-
-The project expects the extracted dataset files in the `data/` folder.
-
-Typical files:
-
-* `pmc_abstract_conclusion_data.pkl`
-* `all_unique_mesh_tags.csv`
-* `pmc_pair_dataset_balanced.csv`
-
-If you are rebuilding from scratch, run the extraction notebook first, then the dataset-building notebook.
-
----
-
-### 4. Build the pair-level dataset
-
-Run the dataset construction notebook to:
-
-* clean the text
-* assign subdomains
-* generate positive and negative pairs
-* save the final CSV file
-
-The final dataset should contain the following minimum columns:
-
-* `abstract_clean`
-* `conclusion_clean`
-* `label`
-* `abstract_subdomain`
-* `conclusion_subdomain`
-* `abs_wc`
-* `concl_wc`
-
----
-
-### 5. Train the models
-
-Run the training notebook one model at a time.
-
-Each model saves its own directory under `saved_models/`.
-
-Example output structure:
-
-```text
-saved_models/BART/
-├── model/
-├── tokenizer/
-├── results/
-├── best_model.pt
-├── metrics.json
-├── threshold.json
-├── label_map.json
-├── inference.py
-└── training_config.json
-```
-
----
-
-### 6. Compare results
-
-After training, inspect:
-
-* metrics in `metrics.json`
-* plots in `results/`
-* model comparison figures in `figures/`
-
----
-
-### 7. Run inference
-
-Use the saved inference script for the model you want to deploy.
-
-For example, for BART:
-
-```bash
-python saved_models/BART/inference.py
-```
-
-You can also import the inference function and pass a custom abstract/conclusion pair.
-
----
-
-## BART Inference Example
+## Run BART inference cell
 
 The BART inference script supports multiline abstract and conclusion input and returns:
 
@@ -394,8 +276,6 @@ The BART inference script supports multiline abstract and conclusion input and r
 }
 ```
 
----
-
 ## Reproducibility
 
 To reproduce the experiments:
@@ -405,52 +285,6 @@ To reproduce the experiments:
 * keep the same preprocessing steps
 * use the same threshold tuning procedure
 * load the same saved checkpoints
-
----
-
-## Limitations
-
-* Performance depends on the quality of subdomain grouping.
-* Some biomedical papers span multiple domains.
-* Long-context models are slower and more memory intensive.
-* Prompt-based models may be sensitive to phrasing.
-
----
-
-## Future Work
-
-Possible extensions include:
-
-* paper-level split enforcement
-* stronger MeSH normalization
-* external validation on PubMed-only corpora
-* hierarchical subdomain classification
-* explanation generation for predicted labels
-* deployment as a web app or local API
-
----
-
-## Citation
-
-If you use this project in your work, cite the relevant biomedical and transformer model references used in the study.
-
----
-
-## Contact
-
-Add your name, email, or GitHub profile here.
-
----
-
-## License
-
-Add your project license here, for example:
-
-* MIT
-* Apache 2.0
-* GNU GPL v3
-
----
 
 ## Acknowledgements
 
