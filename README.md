@@ -154,6 +154,24 @@ BART is an encoder-decoder model trained using a denoising objective. For this p
 
 ### Test Results Summary
 
+Performance Metrics:
+
+```text
+ACRD-Project/
+├── saved_models/
+│   ├── model_name/
+|   |   ├── metrics.json
+```
+
+Charts and Curves:
+
+```text
+ACRD-Project/
+├── saved_models/
+│   ├── model_name/
+|   |   ├── results/
+```
+
 The following table summarizes the test performance of the six models. The values show that all models perform well, but there are clear differences in accuracy, calibration, and training efficiency.
 
 | Model       | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | Weighted F1 | ROC-AUC | PR-AUC | Log-Loss |
