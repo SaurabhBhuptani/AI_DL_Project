@@ -124,9 +124,13 @@ This project benchmarks six deep learning models for biomedical abstract–concl
 
 SBERT is the fastest model in the benchmark and serves as a strong embedding-based baseline. It encodes the abstract and conclusion independently into dense sentence representations. Those representations are then combined with pairwise interaction features and passed through a lightweight multilayer perceptron. Because the encoder is frozen and only the classifier head is trained, SBERT is highly efficient and inexpensive to run. In this project, SBERT is especially useful as a practical reference model: it shows how far a sentence-embedding approach can go before moving to heavier transformer cross-encoders.
 
+![Project Thumbnail](figures/sbert.png)
+
 ### 2. BioBERT
 
 BioBERT is a biomedical transformer pretrained on PubMed and PMC-style text. It is used here as a cross-encoder, meaning the abstract and conclusion are concatenated and processed jointly. This is a stronger formulation than independent encoding because the model can attend across the two sections token by token. BioBERT is expected to perform well on this task because the dataset is biomedical, the labels are subdomain-based, and the language is technical and domain-specific. Its strong results confirm that biomedical pretraining is highly valuable for this classification problem.
+
+![Project Thumbnail](figures/biobert.png)
 
 ### 3. Longformer
 
@@ -140,9 +144,13 @@ BigBird is another long-context transformer, but it uses a block-sparse attentio
 
 T5 is a text-to-text model adapted here for prompt-based classification. Instead of using a traditional classification head, the model receives a natural-language prompt and predicts a label through token likelihood scoring. This makes T5 flexible, but also more sensitive to prompt design and calibration. In this project, T5 is useful as a contrasting architecture because it tests whether the task can be solved well using a text-to-text framing rather than a direct classification head. The results show that T5 is still capable of learning the task, but it is less competitive than the strongest encoder and encoder-decoder classifiers under the current setup.
 
+![Project Thumbnail](figures/t5.png)
+
 ### 6. BART
 
 BART is an encoder-decoder model trained using a denoising objective. For this project, it is used in sequence-classification mode, which lets the encoder process the abstract and conclusion jointly and pass the pooled representation to a classification head. BART is one of the strongest models in the benchmark and achieves the best overall classification performance. This suggests that its combination of a robust pretrained encoder and a strong classification head is particularly effective for biomedical pair classification.
+
+![Project Thumbnail](figures/common_training.png)
 
 ### Test Results Summary
 
