@@ -114,6 +114,8 @@ A negative sample is created by pairing an abstract from one paper with a conclu
 
 This creates a supervised binary task where the model learns whether two biomedical sections are semantically aligned within the same subdomain.
 
+![Project Thumbnail](figures/dataset_creation_pipeline.png)
+
 ## Models and Results
 
 This project benchmarks six deep learning models for biomedical abstract–conclusion relevance detection. Every model is trained on the same pair-level dataset, uses the same label definition, and is evaluated using the same validation-driven threshold selection procedure. The goal is not only to compare final accuracy, but also to compare how different architectural families behave on biomedical text pairs under identical preprocessing and evaluation settings.
